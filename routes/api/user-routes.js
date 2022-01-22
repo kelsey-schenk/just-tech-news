@@ -67,6 +67,37 @@ router.post('/', (req,res) => {
     })
 });
 
+// Login route
+router.post('/login', (req, res) => {
+    // expects {email, password}, finds user with specified email
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    // result of the query is passed as dbUserData
+    }).then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({ message: 'No user with that email address!' })
+            return;
+        }
+
+        // Verify user
+        // Instance method was called on the user retrieved from the database
+        // Instance method returns a Boolean which can be used in a conditional to
+        // verify whether the user has been verified or not
+        const validPassword = dbUserData.checkPassword(req.body.password);
+        if (!validPassword) {
+            res.status(400).json({ message: 'Incorrect password!' });
+            return;
+            // If the match returns a false value, an error message is sent back to the client
+            // and the return statement exits out of the function immediately
+        }
+        // if there is a match the conditional statement block is ignored
+        res.json({ user: dbUserData, message: 'You are now logged in!' });
+        
+    });
+});
+
 // PUT /api/users/1
 router.put('/:id', (req, res) => {
     //  expects {username: '', email: '', password: ''}
