@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User } = require('../../models');
+const { User, Post, Vote } = require('../../models');
 
 // GET /api/users
 router.get('/', (req, res) => {
@@ -20,16 +20,22 @@ router.get('/', (req, res) => {
 
 // GET /api/users/1
 // Different from the .findAll() method
-// in tht we're indicating we only want one piece of dta back
+// in tht we're indicating we only want one piece of data back
 router.get('/:id', (req, res) => {
     // Passing an argument into the .findOne() method
     User.findOne({
-        attributes: { exclude: ['password'] },
-        // Using the where option to indicate we want to find
-        // a user where its id value equals whatever req.params.id is
-        where: {
-            id: req.params.id
-        }
+        include: [
+            {
+                model: Post,
+                attributes: ['id', 'title', 'post_url', 'created_at']
+            },
+            {
+                model: Post,
+                attributes: ['title'],
+                through: Vote,
+                as: 'voted_posts'
+            }
+        ]
     })
     // Because we're looking for one user there's the possibility
     // that we could accidentally search for a user
