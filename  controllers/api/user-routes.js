@@ -24,6 +24,10 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     // Passing an argument into the .findOne() method
     User.findOne({
+        attributes: { exclude: ['password'] },
+        where: {
+            id: req.params.id
+        },
         include: [
             {
                 model: Post,
