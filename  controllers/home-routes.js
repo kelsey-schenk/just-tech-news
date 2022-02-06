@@ -38,4 +38,21 @@ router.get('/', (req, res) => {
     });
 });
 
+// check for a session and redirect to the homepage if one exists
+router.get('/login', (req, res) => {
+    if (req.session.loggedIn) {
+        res.redirect('/');
+        return;
+    }
+
+    res.render('login');
+});
+
+// Console log session variables
+router.get('/', (req,res) => {
+    console.log(req.session);
+
+    // other logic...
+})
+
 module.exports = router;
